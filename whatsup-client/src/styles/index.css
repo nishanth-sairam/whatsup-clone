@@ -1,0 +1,222 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  /* Global reset and base styles */
+  * {
+    @apply box-border;
+  }
+  
+  body {
+    @apply font-sans antialiased;
+    @apply text-telegram-light-text dark:text-telegram-dark-text;
+    @apply bg-telegram-light-background dark:bg-telegram-dark-background;
+    @apply transition-colors duration-300;
+  }
+
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-telegram-light-outline dark:bg-telegram-dark-outline rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-telegram-light-textMuted dark:bg-telegram-dark-textMuted;
+  }
+}
+
+@layer components {
+  /* Button Components */
+  .btn-telegram {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium;
+    @apply transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn-telegram bg-telegram-light-primary dark:bg-telegram-dark-primary;
+    @apply text-white hover:opacity-90 focus:ring-telegram-light-primary/50;
+  }
+
+  .btn-secondary {
+    @apply btn-telegram bg-telegram-light-surface dark:bg-telegram-dark-surface;
+    @apply text-telegram-light-text dark:text-telegram-dark-text;
+    @apply border border-telegram-light-outline dark:border-telegram-dark-outline;
+    @apply hover:bg-telegram-light-surfaceVariant dark:hover:bg-telegram-dark-surfaceVariant;
+  }
+
+  .btn-icon {
+    @apply btn-telegram w-10 h-10 p-0 rounded-full;
+  }
+
+  /* Input Components */
+  .input-telegram {
+    @apply w-full px-3 py-2 rounded-lg border;
+    @apply bg-telegram-light-background dark:bg-telegram-dark-surface;
+    @apply border-telegram-light-outline dark:border-telegram-dark-outline;
+    @apply text-telegram-light-text dark:text-telegram-dark-text;
+    @apply placeholder:text-telegram-light-textMuted dark:placeholder:text-telegram-dark-textMuted;
+    @apply transition-colors duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-telegram-light-primary/50 dark:focus:ring-telegram-dark-primary/50;
+    @apply focus:border-telegram-light-primary dark:focus:border-telegram-dark-primary;
+  }
+
+  /* Card Components */
+  .card-telegram {
+    @apply bg-telegram-light-background dark:bg-telegram-dark-surface;
+    @apply border border-telegram-light-outline dark:border-telegram-dark-outline;
+    @apply rounded-xl shadow-telegram dark:shadow-message-dark;
+  }
+
+  /* Message Components */
+  .message-bubble {
+    @apply max-w-xs lg:max-w-md xl:max-w-lg;
+    @apply px-3 py-2 rounded-message shadow-message dark:shadow-message-dark;
+    @apply relative break-words;
+  }
+
+  .message-bubble-out {
+    @apply message-bubble bg-telegram-light-messageOut dark:bg-telegram-dark-messageOut;
+    @apply text-telegram-light-text dark:text-telegram-dark-text;
+    @apply rounded-br-sm;
+  }
+
+  .message-bubble-in {
+    @apply message-bubble bg-telegram-light-messageIn dark:bg-telegram-dark-messageIn;
+    @apply text-telegram-light-text dark:text-telegram-dark-text;
+    @apply border border-telegram-light-outline dark:border-telegram-dark-outline;
+    @apply rounded-bl-sm;
+  }
+
+  /* Chat Components */
+  .chat-container {
+    @apply bg-telegram-light-surface dark:bg-telegram-dark-surface;
+    @apply border-r border-telegram-light-outline dark:border-telegram-dark-outline;
+  }
+
+  .chat-header {
+    @apply bg-telegram-light-background dark:bg-telegram-dark-surface;
+    @apply border-b border-telegram-light-outline dark:border-telegram-dark-outline;
+    @apply px-4 py-3;
+  }
+
+  .chat-list-item {
+    @apply flex items-center gap-3 p-3 cursor-pointer;
+    @apply hover:bg-telegram-light-surfaceVariant dark:hover:bg-telegram-dark-surfaceVariant;
+    @apply transition-colors duration-200;
+    @apply border-b border-telegram-light-outline/50 dark:border-telegram-dark-outline/50;
+  }
+
+  .chat-list-item.active {
+    @apply bg-telegram-light-primary/10 dark:bg-telegram-dark-primary/10;
+    @apply border-r-2 border-telegram-light-primary dark:border-telegram-dark-primary;
+  }
+
+  /* Avatar Components */
+  .avatar {
+    @apply rounded-full overflow-hidden flex-shrink-0;
+  }
+
+  .avatar-sm {
+    @apply avatar w-8 h-8;
+  }
+
+  .avatar-md {
+    @apply avatar w-10 h-10;
+  }
+
+  .avatar-lg {
+    @apply avatar w-12 h-12;
+  }
+
+  /* Status Components */
+  .status-online {
+    @apply absolute bottom-0 right-0 w-3 h-3;
+    @apply bg-telegram-light-success dark:bg-telegram-dark-success;
+    @apply border-2 border-telegram-light-background dark:border-telegram-dark-background;
+    @apply rounded-full;
+  }
+
+  /* Theme Toggle */
+  .theme-toggle {
+    @apply fixed top-4 right-4 z-50;
+    @apply btn-icon bg-telegram-light-primary dark:bg-telegram-dark-primary;
+    @apply text-white shadow-telegram-lg;
+    @apply hover:scale-110 transition-transform duration-200;
+  }
+
+  /* Sidebar */
+  .sidebar-nav {
+    @apply flex flex-col items-center gap-3 p-3;
+    @apply bg-telegram-light-surface dark:bg-telegram-dark-surface;
+    @apply border-r border-telegram-light-outline dark:border-telegram-dark-outline;
+  }
+
+  /* Welcome Screen */
+  .welcome-screen {
+    @apply flex flex-col items-center justify-center h-full;
+    @apply bg-telegram-light-surface dark:bg-telegram-dark-surface;
+    @apply text-center px-8;
+  }
+
+  /* Loading Spinner */
+  .spinner {
+    @apply inline-block w-6 h-6 border-2 border-solid rounded-full;
+    @apply border-telegram-light-primary dark:border-telegram-dark-primary;
+    @apply border-r-transparent animate-spin;
+  }
+
+  /* Message Status Icons */
+  .message-status {
+    @apply text-xs text-telegram-light-textMuted dark:text-telegram-dark-textMuted;
+  }
+
+  .message-status.delivered {
+    @apply text-telegram-light-success dark:text-telegram-dark-success;
+  }
+
+  .message-status.read {
+    @apply text-telegram-light-primary dark:text-telegram-dark-primary;
+  }
+
+  /* Chat Input */
+  .chat-input-container {
+    @apply flex items-center gap-2 p-3;
+    @apply bg-telegram-light-background dark:bg-telegram-dark-surface;
+    @apply border-t border-telegram-light-outline dark:border-telegram-dark-outline;
+  }
+
+  /* Utility classes for transitions */
+  .transition-telegram {
+    @apply transition-all duration-200 ease-in-out;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .backdrop-blur-telegram {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}

@@ -1,0 +1,121 @@
+// Theme System with CSS Custom Properties
+:root {
+    // Primary Colors (Dark blue-gray from palette)
+    --primary-color: #252a34;
+    --primary-light: #2d3441;
+    --primary-dark: #1d1f27;
+
+    // Secondary Colors (Light gray from palette)
+    --secondary-color: #eaeaea;
+    --secondary-light: #f5f5f5;
+    --secondary-dark: #d0d0d0;
+
+    // Accent Colors (Hot pink from palette)
+    --accent-color: #ff2e63;
+    --accent-light: #ff5a84;
+    --accent-dark: #e6154a;
+
+    // Highlight Color (Cyan from palette)
+    --highlight-color: #08d9d6;
+    --highlight-light: #2de5e2;
+    --highlight-dark: #06c2bf;
+
+    // Background Colors
+    --bg-primary: #1d1f27;
+    --bg-secondary: #252a34;
+    --bg-tertiary: #2d3441;
+    --bg-chat: #1d1f27;
+    --bg-message-self: linear-gradient(135deg, #ff2e63 0%, #e6154a 100%);
+    --bg-message-friend: #2d3441;
+    --bg-sidebar: #252a34;
+
+    // Text Colors
+    --text-primary: #eaeaea;
+    --text-secondary: #b0b0b0;
+    --text-muted: #888;
+    --text-on-accent: #fff;
+    --text-dark: #252a34;
+
+    // Border Colors
+    --border-color: #3a3f4a;
+    --border-light: #4a4f5a;
+    --border-dark: #2a2f3a;
+
+    // Status Colors
+    --success-color: #08d9d6;
+    --warning-color: #ffc107;
+    --danger-color: #ff2e63;
+    --info-color: #08d9d6;
+
+    // Gradients
+    --gradient-primary: linear-gradient(135deg, #252a34 0%, #2d3441 100%);
+    --gradient-accent: linear-gradient(135deg, #ff2e63 0%, #e6154a 100%);
+    --gradient-dark: linear-gradient(135deg, #1d1f27 0%, #252a34 100%);
+    --gradient-highlight: linear-gradient(135deg, #08d9d6 0%, #06c2bf 100%);
+
+    // Shadows
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+    // Sizes
+    --border-radius: 12px;
+    --border-radius-small: 8px;
+    --border-radius-large: 20px;
+
+    // Transitions
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+// Light theme variant
+[data-theme='light'] {
+    --primary-color: #eaeaea;
+    --primary-light: #f5f5f5;
+    --primary-dark: #d0d0d0;
+
+    --secondary-color: #252a34;
+    --secondary-light: #3a3f4a;
+    --secondary-dark: #1d1f27;
+
+    --accent-color: #ff2e63;
+    --accent-light: #ff5a84;
+    --accent-dark: #e6154a;
+
+    --highlight-color: #08d9d6;
+    --highlight-light: #2de5e2;
+    --highlight-dark: #06c2bf;
+
+    --bg-primary: #fff;
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #eaeaea;
+    --bg-chat: url('../../../assets/wa_bg.png'), #f0f2f5;
+    --bg-message-self: linear-gradient(135deg, #ff2e63 0%, #e6154a 100%);
+    --bg-message-friend: #fff;
+    --bg-sidebar: #fff;
+
+    --text-primary: #252a34;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --text-on-accent: #fff;
+    --text-dark: #000;
+
+    --border-color: #dee2e6;
+    --border-light: #e9ecef;
+    --border-dark: #adb5bd;
+
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+// SCSS Variables for backward compatibility
+$primary-color: var(--primary-color);
+$secondary-color: var(--secondary-color);
+$accent-color: var(--accent-color);
+$bg-primary: var(--bg-primary);
+$bg-secondary: var(--bg-secondary);
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$border-color: var(--border-color);

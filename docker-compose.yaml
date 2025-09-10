@@ -1,0 +1,111 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: whatsupclone_db
+    environment:
+      POSTGRES_DB: whatsupclone_db
+      POSTGRES_USER: whatsup_admin
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - whatsup_network
+
+  keycloak:
+    container_name: whatsupclone_keycloak
+    image: quay.io/keycloak/keycloak:26.2.5
+    ports:
+      - "8080:8080"
+    environment:
+      # Admin credentials
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+
+      # Database configuration
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/whatsupclone_db
+      KC_DB_USERNAME: whatsup_admin
+      KC_DB_PASSWORD: postgres
+
+      # Development settings
+
+      KC_HEALTH_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_LOG_CONSOLE_OUTPUT: default
+      KC_LOG_LEVEL: INFO
+      KC_METRICS_ENABLED: true
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak/realm-config.json:/opt/keycloak/data/import/realm-config.json
+    networks:
+      - whatsup_network
+    command: start-dev --import-realm
+    depends_on:
+      postgres:
+        condition: service_started
+    restart: unless-stopped
+
+  whatsup-server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: whatsupclone_server
+    ports:
+      - "9090:9090"
+    environment:
+      # Datasource
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/whatsupclone_db
+      SPRING_DATASOURCE_USERNAME: whatsup_admin
+      SPRING_DATASOURCE_PASSWORD: postgres
+      # CORS
+      APP_CORS_ALLOWED_ORIGIN: http://localhost:5173
+      # Keycloak and Spring Security environment variables
+      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080
+      KEYCLOAK_REALM: my-realm
+      KEYCLOAK_RESOURCE: spring-backend
+      KEYCLOAK_PUBLIC_CLIENT: "true"
+      KEYCLOAK_BEARER_ONLY: "true"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/my-realm
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/my-realm/protocol/openid-connect/certs
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - whatsup_network
+    depends_on:
+      postgres:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    restart: unless-stopped
+
+  whatsup-client:
+    build:
+      context: ./whatsup-client
+      dockerfile: Dockerfile
+    container_name: whatsupclone_client
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:9090
+      VITE_KEYCLOAK_URL: http://localhost:8080
+      VITE_KEYCLOAK_REALM: my-realm
+      VITE_KEYCLOAK_CLIENT_ID: react-app
+    networks:
+      - whatsup_network
+    depends_on:
+      - whatsup-server
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  keycloak_data:
+
+networks:
+  whatsup_network:
+    driver: bridge
