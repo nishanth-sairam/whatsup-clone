@@ -1,7 +1,6 @@
-version: "3.8"
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:16
     container_name: whatsupclone_db
     environment:
       POSTGRES_DB: whatsupclone_db
@@ -58,6 +57,7 @@ services:
     container_name: whatsupclone_server
     ports:
       - "9090:9090"
+      - "5005:5005" # Debug port
     environment:
       # Datasource
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/whatsupclone_db
@@ -73,6 +73,11 @@ services:
       KEYCLOAK_BEARER_ONLY: "true"
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/my-realm
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/my-realm/protocol/openid-connect/certs
+      # Java Debug Options
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xmx1G -Xms512m"
+      # File Upload Configuration
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 100MB
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 100MB
     volumes:
       - ./backend/uploads:/app/uploads
     networks:

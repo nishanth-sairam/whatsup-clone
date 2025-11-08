@@ -33,7 +33,42 @@ cd whatsup-clone
 
 - Frontend: http://localhost:5173
 - Backend: http://localhost:9090
+- API Documentation (Swagger): http://localhost:9090/swagger-ui.html
 - Keycloak: http://localhost:8080 (admin/admin)
+
+## Development & Debugging
+
+For detailed debugging instructions, see [DEBUGGING.md](DEBUGGING.md)
+
+### Quick Debug Setup
+
+1. **Start required services:**
+
+   ```bash
+   # Windows
+   debug-start.bat
+
+   # Linux/Mac
+   ./debug-start.sh
+   ```
+
+2. **Debug in VS Code:**
+   - Press `Ctrl+Shift+D` (Run and Debug)
+   - Select "Debug Spring Boot Backend"
+   - Press `F5` to start debugging
+   - Set breakpoints and enjoy debugging!
+
+### VS Code Tasks
+
+Press `Ctrl+Shift+P` and type "Tasks: Run Task":
+
+- Build Backend
+- Run Backend Tests
+- Start Dev Services (DB + Keycloak)
+- Stop Dev Services
+- Start Full Stack
+- Stop Full Stack
+- View Backend Logs
 
 ## Docker Commands
 
@@ -44,38 +79,28 @@ cd whatsup-clone
 ./manage.sh status      # Check status
 ```
 
-## API Endpoints
+## API Documentation
 
-### Authentication
+The complete API documentation is available through Swagger UI:
 
-```
-GET    /api/auth/user-info     # Get user info
-PUT    /api/auth/profile       # Update profile
-```
+- **Swagger UI**: http://localhost:9090/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:9090/api-docs
 
-### Users & Chats
+### Key API Features
 
-```
-GET    /api/users              # Get users
-GET    /api/chats              # Get chats
-POST   /api/chats              # Create chat
-```
+- **Authentication**: OAuth2/JWT via Keycloak integration
+- **Real-time Messaging**: WebSocket endpoints for live chat
+- **Media Sharing**: File upload/download endpoints
+- **User Management**: User discovery and profile management
+- **Chat Management**: Create and manage chat conversations
 
-### Messages
+### Using Swagger UI
 
-```
-GET    /api/messages/{chatId}  # Get messages
-POST   /api/messages           # Send message
-POST   /api/messages/media     # Upload media
-```
+1. Start the application using `./manage.sh up`
+2. Navigate to http://localhost:9090/swagger-ui.html
+3. To test authenticated endpoints:
+   - First, obtain a JWT token from Keycloak at http://localhost:8080
+   - Click the "Authorize" button in Swagger UI
+   - Enter your Bearer token in the format: `Bearer <your-jwt-token>`
 
-### WebSocket
 
-```
-CONNECT /ws                    # WebSocket connection
-SEND    /app/chat.sendMessage  # Send message
-```
-
-## License
-
-MIT License

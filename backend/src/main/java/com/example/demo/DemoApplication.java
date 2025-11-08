@@ -12,14 +12,5 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
-
-    @GetMapping("/")
-    public String home() {
-        return "Welcome to the Keycloak Demo Application!";
-    }
-
-    @GetMapping("/health")
-    public String health() {
-        return "Application is running!";
-    }
+   
 }

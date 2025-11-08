@@ -25,5 +25,5 @@ COPY --from=build /app/target/*.jar app.jar
 # Expose port
 EXPOSE 9090
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the application with increased memory and file upload optimizations
+ENTRYPOINT ["java", "-Xmx1G", "-Xms512m", "-Djava.awt.headless=true", "-Dfile.encoding=UTF-8", "-jar", "app.jar"]

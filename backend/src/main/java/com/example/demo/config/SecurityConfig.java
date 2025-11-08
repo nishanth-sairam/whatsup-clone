@@ -10,7 +10,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
@@ -43,17 +45,17 @@ public class SecurityConfig {
                         .requestMatchers("/", "/health", "/actuator/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers(
-                                "v3/api-docs",
-                                "/v3/api-docs/**",
+                                "/api/debug/**",
+                                "/configuration/security",
+                                "/configuration/ui",
                                 "/swagger-resources",
                                 "/swagger-resources/**",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/swagger-ui/**",
-                                "/webjars/**",
                                 "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/webjars/**",
                                 "/ws/**",
-                                "/api/debug/**"
+                                "/v3/api-docs"
                         ).permitAll()
 
                         // Admin endpoints
@@ -75,21 +77,15 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
-
-        // Configure to handle multiple possible issuers for Docker environment
-        // We'll use a more flexible issuer validation that accepts both localhost and
-        // keycloak hostnames
         jwtDecoder.setJwtValidator(jwt -> {
             String issuer = jwt.getClaimAsString("iss");
-            if (issuer != null && (issuer.equals("http://localhost:8080/realms/my-realm") ||
-                    issuer.equals("http://keycloak:8080/realms/my-realm"))) {
-                return org.springframework.security.oauth2.jwt.JwtValidators.createDefault().validate(jwt);
+            if (issuer != null) {
+                return JwtValidators.createDefault().validate(jwt);
             } else {
                 OAuth2Error error = new OAuth2Error("invalid_issuer", "Invalid issuer: " + issuer, null);
-                return org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.failure(error);
+                return OAuth2TokenValidatorResult.failure(error);
             }
         });
-
         return jwtDecoder;
     }
 
