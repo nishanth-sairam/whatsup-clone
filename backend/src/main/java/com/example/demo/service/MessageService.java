@@ -140,14 +140,7 @@ public class MessageService {
 
 
     public Page<MessageResponse> findChatMessages(MessageRequest messageRequest) {
-        Pageable pageable = PageUtil.getPageable(
-                messageRequest.getPage(),
-                messageRequest.getSize(),
-                messageRequest.getSortBy(),
-                messageRequest.getSortDir(),
-                "createdAt",
-                "desc"
-        );
+        Pageable pageable = messageRequest.getPageable();
         Page<Message> pageMessages = messageRepository.findAllByChatIdOrderByCreatedAtDesc(messageRequest.getChatId(), pageable);
         List<MessageResponse> messageResponses = pageMessages.getContent().stream().map(mapper::toMessageResponse).toList();
         Page<MessageResponse> responsePage = new PageImpl<>(messageResponses, pageable, pageMessages.getTotalElements());

@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -40,8 +39,8 @@ public class MessageController {
 
     @PostMapping(value = "/upload-media", consumes = "multipart/form-data")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> uploadMedia(@RequestParam("chatId") UUID chatId,
-            @RequestParam("file") MultipartFile file, Authentication authentication) {
+    public ResponseEntity<String> uploadMedia(@RequestParam() UUID chatId,
+            @RequestParam() MultipartFile file, Authentication authentication) {
         try {
             // Check if file is empty
             if (file.isEmpty()) {
@@ -67,7 +66,7 @@ public class MessageController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void setMessageToSeen(@RequestParam("chatId") UUID chatId, Authentication authentication) {
+    public void setMessageToSeen(@RequestParam() UUID chatId, Authentication authentication) {
         messageService.setMessageToSeen(chatId, authentication);
     }
 

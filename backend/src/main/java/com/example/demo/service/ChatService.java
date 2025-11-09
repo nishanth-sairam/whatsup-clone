@@ -49,5 +49,9 @@ public class ChatService {
         return saveChat.getId();
     }
 
+    public List<Chat> getAllChats() {
+        return chatRepository.findAll();
+    }
+
 
 }

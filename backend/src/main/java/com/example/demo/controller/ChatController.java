@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.annotation.PageReq;
+import com.example.demo.request.DefaultRequest;
 import com.example.demo.response.ChatResponse;
 import com.example.demo.response.StringResponse;
 import com.example.demo.service.ChatService;
@@ -24,7 +26,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping()
-    public ResponseEntity<StringResponse> createChat(@RequestParam("senderId") String senderId, @RequestParam("receiverId") String receiverId) throws Exception {
+    public ResponseEntity<StringResponse> createChat(@RequestParam() String senderId, @RequestParam() String receiverId) throws Exception {
         final String chatId = chatService.createChat(senderId, receiverId).toString();
         return ResponseEntity.ok(StringResponse.builder().response(chatId).build());
     }
