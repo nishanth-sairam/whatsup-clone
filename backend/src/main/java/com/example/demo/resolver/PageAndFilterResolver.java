@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -27,13 +29,14 @@ import com.example.demo.annotation.PageReq;
 import com.example.demo.constant.CommonConstant;
 import com.example.demo.model.FilterCriteria;
 import com.example.demo.model.FilterOperator;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.request.DefaultRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 
 @Slf4j
 @Component
@@ -51,64 +54,106 @@ public class PageAndFilterResolver implements HandlerMethodArgumentResolver {
             @NonNull NativeWebRequest request, @Nullable WebDataBinderFactory factory) throws Exception {
 
         Class<?> clazz = parameter.getParameterType();
-        Object requestObj;
+        Object requestObj = instantiateRequestObject(clazz);
+        HttpServletRequest servletRequest = (HttpServletRequest) request.getNativeRequest();
+        if (servletRequest != null) {
+            bindRequestBody(servletRequest, clazz, requestObj);
+            bindAuthenticatedUser(servletRequest, requestObj);
+        }
+        bindPathVariables(request, requestObj);
+        bindQueryParameters(request, requestObj);
+        bindPagination(request, requestObj);
+        bindFilters(request, requestObj);
+        bindAuthentication(requestObj);
+        return requestObj;
+    }
 
+    private Object instantiateRequestObject(Class<?> clazz) {
         try {
-            requestObj = clazz.getDeclaredConstructor().newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             log.error("Failed to instantiate parameter type: {}", clazz.getName(), e);
             throw new IllegalArgumentException("Unable to instantiate request object of type: " + clazz.getName(), e);
         }
+    }
 
-        // Handle request body if present
-        HttpServletRequest servletRequest = (HttpServletRequest) request.getNativeRequest();
-        if (servletRequest != null && hasRequestBody(servletRequest)) {
-            try {
-                Object body = mapper.readValue(servletRequest.getInputStream(), clazz);
-                BeanUtils.copyProperties(body, requestObj);
-                log.debug("Bound request body to {}", clazz.getSimpleName());
-            } catch (Exception e) {
-                log.warn("Failed to parse request body for type: {}", clazz.getName(), e);
-                // Continue with other bindings even if body parsing fails
-            }
+    private void bindRequestBody(HttpServletRequest servletRequest, Class<?> clazz, Object requestObj) {
+        if (!hasRequestBody(servletRequest)) {
+            return;
         }
 
-        // Handle path variables
+        try {
+            Object body = mapper.readValue(servletRequest.getInputStream(), clazz);
+            BeanUtils.copyProperties(body, requestObj);
+            log.debug("Bound request body to {}", clazz.getSimpleName());
+        } catch (Exception e) {
+            log.warn("Failed to parse request body for type: {}", clazz.getName(), e);
+            // Continue with other bindings even if body parsing fails
+        }
+    }
+
+    private void bindAuthenticatedUser(HttpServletRequest servletRequest, Object requestObj) {
+        Object authenticatedUser = servletRequest.getAttribute(CommonConstant.AUTHENTICATED_USER);
+        if (authenticatedUser != null) {
+            setFieldIfExists(requestObj, "user", authenticatedUser);
+            log.debug("Bound authenticated user from request attribute");
+        }
+    }
+
+    private void bindPathVariables(NativeWebRequest request, Object requestObj) {
         @SuppressWarnings("unchecked")
         Map<String, String> pathVars = (Map<String, String>) request
                 .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+
         if (pathVars != null && !pathVars.isEmpty()) {
             pathVars.forEach((k, v) -> setFieldIfExists(requestObj, k, v));
             log.debug("Bound {} path variables", pathVars.size());
         }
+    }
 
-        // Handle query parameters
+    private void bindQueryParameters(NativeWebRequest request, Object requestObj) {
         Map<String, String[]> params = request.getParameterMap();
-        if (params != null && !params.isEmpty()) {
-            params.forEach((k, v) -> {
-                if (v != null && v.length > 0 && v[0] != null) {
-                    setFieldIfExists(requestObj, k, v[0]);
-                }
-            });
-            log.debug("Bound {} query parameters", params.size());
+        if (params == null || params.isEmpty()) {
+            return;
         }
 
-        // Handle pagination
+        int boundCount = 0;
+        for (Map.Entry<String, String[]> entry : params.entrySet()) {
+            String[] values = entry.getValue();
+            if (values != null && values.length > 0 && values[0] != null) {
+                setFieldIfExists(requestObj, entry.getKey(), values[0]);
+                boundCount++;
+            }
+        }
+
+        if (boundCount > 0) {
+            log.debug("Bound {} query parameters", boundCount);
+        }
+    }
+
+    private void bindPagination(NativeWebRequest request, Object requestObj) {
         Pageable pageable = createPageable(request);
         if (pageable != null) {
             setFieldIfExists(requestObj, CommonConstant.PARAM_PAGEABLE, pageable);
             log.debug("Created pageable: page={}, size={}, sort={}",
                     pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
         }
+    }
 
-        // Handle filters
+    private void bindFilters(NativeWebRequest request, Object requestObj) {
         List<FilterCriteria> filters = parseFilters(request);
         if (filters != null && !filters.isEmpty()) {
             setFieldIfExists(requestObj, CommonConstant.PARAM_FILTERS, filters);
             log.debug("Parsed {} filter criteria", filters.size());
         }
+    }
 
-        return requestObj;
+    private void bindAuthentication(Object requestObj) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            setFieldIfExists(requestObj, "authentication", authentication);
+            log.debug("Bound authentication for user: {}", authentication.getName());
+        }
     }
 
     private boolean hasRequestBody(HttpServletRequest request) {

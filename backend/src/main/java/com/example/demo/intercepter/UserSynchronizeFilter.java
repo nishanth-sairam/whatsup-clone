@@ -1,6 +1,5 @@
 package com.example.demo.intercepter;
 
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +12,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.demo.constant.CommonConstant;
+import com.example.demo.model.User;
+
 import java.io.IOException;
 
 @Component
@@ -22,10 +24,13 @@ public class UserSynchronizeFilter extends OncePerRequestFilter {
     private final UserSynchronizer userSynchronizer;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
-            JwtAuthenticationToken token = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            userSynchronizer.synchronizedWithIdp(token.getToken());
+            JwtAuthenticationToken token = (JwtAuthenticationToken) SecurityContextHolder.getContext()
+                    .getAuthentication();
+            User user = userSynchronizer.synchronizedWithIdp(token.getToken());
+            request.setAttribute(CommonConstant.AUTHENTICATED_USER, user);
         }
         filterChain.doFilter(request, response);
     }

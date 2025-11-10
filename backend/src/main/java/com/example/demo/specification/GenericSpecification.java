@@ -13,7 +13,7 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public class GenericSpecification<T> {
+public class GenericSpecification {
 
     public static <T> Specification<T> withFilters(List<FilterCriteria> filters) {
         return (root, query, criteriaBuilder) -> {
@@ -29,7 +29,7 @@ public class GenericSpecification<T> {
     }
 
     private static <T> Predicate buildPredicate(FilterCriteria filter, Root<T> root, CriteriaBuilder criteriaBuilder) {
-        Path<?> path = root.get(filter.getField());
+        Path<?> path = getPath(root, filter.getField());
         Class<?> fieldType = path.getJavaType();
         Object value = convertValueToFieldType(filter.getValue(), fieldType);
         
@@ -69,6 +69,15 @@ public class GenericSpecification<T> {
             default:
                 throw new IllegalArgumentException("Unsupported operator: " + filter.getOperator());
         }
+    }
+
+    private static Path<?> getPath(Root<?> root, String field) {
+        String[] parts = field.split("\\.");
+        Path<?> path = root;
+        for (String part : parts) {
+            path = path.get(part);
+        }
+        return path;
     }
 
     private static Object convertValueToFieldType(Object value, Class<?> fieldType) {

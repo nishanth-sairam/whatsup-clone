@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.annotation.PageReq;
-import com.example.demo.request.DefaultRequest;
+import com.example.demo.request.ChatRequest;
 import com.example.demo.response.ChatResponse;
 import com.example.demo.response.StringResponse;
 import com.example.demo.service.ChatService;
@@ -25,14 +24,14 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<StringResponse> createChat(@RequestParam() String senderId, @RequestParam() String receiverId) throws Exception {
         final String chatId = chatService.createChat(senderId, receiverId).toString();
         return ResponseEntity.ok(StringResponse.builder().response(chatId).build());
     }
 
     @GetMapping
-    public ResponseEntity<List<ChatResponse>> getChatsByReceiver(Authentication authentication) {
-        return ResponseEntity.ok(chatService.getChatsByReceiverId(authentication));
+    public ResponseEntity<List<ChatResponse>> getChatsByReceiver(ChatRequest request) {
+        return ResponseEntity.ok(chatService.getChatsByReceiverId(request));
     }
 }

@@ -18,10 +18,12 @@ public class UserSynchronizer {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public void synchronizedWithIdp(Jwt token) {
+    public User synchronizedWithIdp(Jwt token) {
         log.info("Synchronizing user with IDP: {}", token.getSubject());
 
-        getUserEmail(token).ifPresent(email -> {
+        Optional<String> emailOpt = getUserEmail(token);
+        if (emailOpt.isPresent()) {
+            String email = emailOpt.get();
             log.info("Synchronizing user having email {}", email);
             Optional<User> optUser = userRepository.findByEmail(email);
             User user = userMapper.fromTokenAttributes(token.getClaims());
@@ -29,8 +31,9 @@ public class UserSynchronizer {
                 user.setId(value.getId());
             });
             log.info("User synchronized with IDP: {}", user);
-            userRepository.save(user);
-        });
+            return userRepository.save(user);
+        }
+        return null;
     }
 
     private Optional<String> getUserEmail(Jwt token) {

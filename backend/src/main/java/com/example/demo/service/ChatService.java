@@ -5,10 +5,12 @@ import com.example.demo.model.Chat;
 import com.example.demo.model.User;
 import com.example.demo.repository.ChatRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.request.ChatRequest;
 import com.example.demo.response.ChatResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +27,28 @@ public class ChatService {
     private final ChatMapper mapper;
 
     @Transactional(readOnly = true)
-    public List<ChatResponse> getChatsByReceiverId(Authentication currentUser) {
-        final String userId = currentUser.getName();
-        return chatRepository.findChatsByUserId(UUID.fromString(userId)).stream().map(chat -> mapper.toChatResponse(chat, userId)).toList();
+    public List<ChatResponse> getChatsByReceiverId(ChatRequest chatRequest) {
+        final UUID userId = chatRequest.getUser().getId();
+        Specification<Chat> specification = (root, query, criteriaBuilder) -> criteriaBuilder.or(
+                criteriaBuilder.equal(root.get("sender").get("id"), userId),
+                criteriaBuilder.equal(root.get("receiver").get("id"), userId));
+
+        return chatRepository.findAll(specification).stream()
+                .map(chat -> mapper.toChatResponse(chat, userId.toString())).toList();
     }
 
-    public UUID createChat(String senderId, String receiverId) throws Exception {
-        Optional<Chat> existingChat = chatRepository.finChatByReceiverAndSender(UUID.fromString(senderId), UUID.fromString(receiverId));
+    public UUID createChat(String senderId, String receiverId) {
+        Optional<Chat> existingChat = chatRepository.finChatByReceiverAndSender(UUID.fromString(senderId),
+                UUID.fromString(receiverId));
         if (existingChat.isPresent()) {
             return existingChat.get().getId();
         }
 
-        User sender = userRepository.findByPublicId(UUID.fromString(senderId)).orElseThrow(() -> new EntityNotFoundException("User not found with sender ID: " + senderId));
+        User sender = userRepository.findByPublicId(UUID.fromString(senderId))
+                .orElseThrow(() -> new EntityNotFoundException("User not found with sender ID: " + senderId));
 
-        User receiver = userRepository.findByPublicId(UUID.fromString(receiverId)).orElseThrow(() -> new EntityNotFoundException("User not found with receiver ID: " + receiverId));
+        User receiver = userRepository.findByPublicId(UUID.fromString(receiverId))
+                .orElseThrow(() -> new EntityNotFoundException("User not found with receiver ID: " + receiverId));
 
         Chat chat = new Chat();
         chat.setSender(sender);
@@ -52,6 +62,5 @@ public class ChatService {
     public List<Chat> getAllChats() {
         return chatRepository.findAll();
     }
-
 
 }
