@@ -1,12 +1,11 @@
 package com.example.demo.response;
 
+import com.example.demo.model.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
-
-import com.example.demo.model.User;
 
 @Getter
 @Setter

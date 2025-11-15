@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends BaseAuditingEntity {
@@ -62,7 +62,7 @@ public class User extends BaseAuditingEntity {
     public boolean isUserOnline() {
         return lastSeen != null && lastSeen.isAfter(LocalDateTime.now().minusMinutes(LAST_ACTIVITY_INTERVAL));
     }
-    
+
 
     public enum Role {
         USER, ADMIN, MODERATOR

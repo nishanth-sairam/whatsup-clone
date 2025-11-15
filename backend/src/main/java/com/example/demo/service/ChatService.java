@@ -9,7 +9,6 @@ import com.example.demo.request.ChatRequest;
 import com.example.demo.response.ChatResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

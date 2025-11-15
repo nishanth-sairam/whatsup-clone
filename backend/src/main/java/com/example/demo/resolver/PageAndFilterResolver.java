@@ -1,12 +1,14 @@
 package com.example.demo.resolver;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.example.demo.annotation.PageReq;
+import com.example.demo.constant.CommonConstant;
+import com.example.demo.model.FilterCriteria;
+import com.example.demo.model.FilterOperator;
+import com.example.demo.request.DefaultRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
@@ -25,18 +27,12 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
-import com.example.demo.annotation.PageReq;
-import com.example.demo.constant.CommonConstant;
-import com.example.demo.model.FilterCriteria;
-import com.example.demo.model.FilterOperator;
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.request.DefaultRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
@@ -51,7 +47,7 @@ public class PageAndFilterResolver implements HandlerMethodArgumentResolver {
     @Override
     @Nullable
     public Object resolveArgument(@NonNull MethodParameter parameter, @Nullable ModelAndViewContainer mvc,
-            @NonNull NativeWebRequest request, @Nullable WebDataBinderFactory factory) throws Exception {
+                                  @NonNull NativeWebRequest request, @Nullable WebDataBinderFactory factory) throws Exception {
 
         Class<?> clazz = parameter.getParameterType();
         Object requestObj = instantiateRequestObject(clazz);

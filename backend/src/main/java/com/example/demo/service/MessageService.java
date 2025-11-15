@@ -8,9 +8,9 @@ import com.example.demo.repository.MessageRepository;
 import com.example.demo.request.MessageRequest;
 import com.example.demo.response.MessageResponse;
 import com.example.demo.util.FileUtil;
-import com.example.demo.util.PageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +26,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MessageService {
     private final MessageRepository messageRepository;
     private final ChatRepository chatRepository;
@@ -65,6 +66,7 @@ public class MessageService {
 
 
     public List<MessageResponse> findChatMessages(UUID chatId) {
+        log.info("Fetching messages for chat ID: {}", chatId);
         return messageRepository.findMessagesByChatId(chatId).stream().map(mapper::toMessageResponse).toList();
     }
 
@@ -140,6 +142,7 @@ public class MessageService {
 
 
     public Page<MessageResponse> findChatMessages(MessageRequest messageRequest) {
+        log.debug("Fetching messages on thread: {}", Thread.currentThread().getName());
         Pageable pageable = messageRequest.getPageable();
         Page<Message> pageMessages = messageRepository.findAllByChatIdOrderByCreatedAtDesc(messageRequest.getChatId(), pageable);
         List<MessageResponse> messageResponses = pageMessages.getContent().stream().map(mapper::toMessageResponse).toList();

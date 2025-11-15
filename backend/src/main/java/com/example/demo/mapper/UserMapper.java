@@ -40,15 +40,15 @@ public class UserMapper {
         if (claims.containsKey("roles")) {
             Object rolesObj = claims.get("roles");
             if (rolesObj instanceof String) {
-            user.setRoles(Set.of(User.Role.valueOf(rolesObj.toString())));
+                user.setRoles(Set.of(User.Role.valueOf(rolesObj.toString())));
             } else if (rolesObj instanceof java.util.Collection<?>) {
-            @SuppressWarnings("unchecked")
-            java.util.Collection<Object> rolesCollection = (java.util.Collection<Object>) rolesObj;
-            Set<User.Role> roleSet = new java.util.HashSet<>();
-            for (Object roleObj : rolesCollection) {
-                roleSet.add(User.Role.valueOf(roleObj.toString()));
-            }
-            user.setRoles(roleSet);
+                @SuppressWarnings("unchecked")
+                java.util.Collection<Object> rolesCollection = (java.util.Collection<Object>) rolesObj;
+                Set<User.Role> roleSet = new java.util.HashSet<>();
+                for (Object roleObj : rolesCollection) {
+                    roleSet.add(User.Role.valueOf(roleObj.toString()));
+                }
+                user.setRoles(roleSet);
             }
         } else {
             user.setRoles(Set.of(User.Role.USER));

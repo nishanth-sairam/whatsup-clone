@@ -1,31 +1,24 @@
 package com.example.demo.controller;
 
-import java.io.IOException;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.example.demo.constant.APIConstant;
 import com.example.demo.model.Message;
 import com.example.demo.request.MessageRequest;
 import com.example.demo.response.MessageResponse;
 import com.example.demo.service.MessageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/messages")
+@RequestMapping(APIConstant.API_V_1_MESSAGES)
 public class MessageController {
 
     @Autowired
@@ -37,10 +30,10 @@ public class MessageController {
         return messageService.saveMessage(messageRequest);
     }
 
-    @PostMapping(value = "/upload-media", consumes = "multipart/form-data")
+    @PostMapping(value = APIConstant.UPLOAD_MEDIA, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> uploadMedia(@RequestParam() UUID chatId,
-            @RequestParam() MultipartFile file, Authentication authentication) {
+                                              @RequestParam() MultipartFile file, Authentication authentication) {
         try {
             // Check if file is empty
             if (file.isEmpty()) {
@@ -70,7 +63,7 @@ public class MessageController {
         messageService.setMessageToSeen(chatId, authentication);
     }
 
-    @GetMapping("/chats/{chatId}")
+    @GetMapping(APIConstant.CHATS + APIConstant.CHAT_ID_PATH)
     public ResponseEntity<Page<MessageResponse>> getMessages(@PathVariable UUID chatId, MessageRequest messageRequest) {
         return ResponseEntity.ok(messageService.findChatMessages(messageRequest));
     }

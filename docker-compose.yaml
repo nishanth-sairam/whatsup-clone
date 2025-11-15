@@ -20,18 +20,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Admin credentials
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-
-      # Database configuration
-      KC_DB: postgres
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_DB_PASSWORD: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/whatsupclone_db
       KC_DB_USERNAME: whatsup_admin
-      KC_DB_PASSWORD: postgres
-
-      # Development settings
-
+      KC_DB: postgres
       KC_HEALTH_ENABLED: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HOSTNAME_STRICT: false
@@ -59,23 +53,19 @@ services:
       - "9090:9090"
       - "5005:5005" # Debug port
     environment:
-      # Datasource
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/whatsupclone_db
-      SPRING_DATASOURCE_USERNAME: whatsup_admin
-      SPRING_DATASOURCE_PASSWORD: postgres
-      # CORS
       APP_CORS_ALLOWED_ORIGIN: http://localhost:5173
-      # Keycloak and Spring Security environment variables
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xmx1G -Xms512m"
       KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080
+      KEYCLOAK_BEARER_ONLY: "true"
+      KEYCLOAK_PUBLIC_CLIENT: "true"
       KEYCLOAK_REALM: my-realm
       KEYCLOAK_RESOURCE: spring-backend
-      KEYCLOAK_PUBLIC_CLIENT: "true"
-      KEYCLOAK_BEARER_ONLY: "true"
+      SERVER_PORT: 9090
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/whatsupclone_db
+      SPRING_DATASOURCE_USERNAME: whatsup_admin
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/my-realm
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/my-realm/protocol/openid-connect/certs
-      # Java Debug Options
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xmx1G -Xms512m"
-      # File Upload Configuration
       SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 100MB
       SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 100MB
     volumes:

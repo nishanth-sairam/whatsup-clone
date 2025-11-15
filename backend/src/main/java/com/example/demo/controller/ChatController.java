@@ -1,24 +1,18 @@
 package com.example.demo.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.example.demo.constant.APIConstant;
 import com.example.demo.request.ChatRequest;
 import com.example.demo.response.ChatResponse;
 import com.example.demo.response.StringResponse;
 import com.example.demo.service.ChatService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/chats")
+@RequestMapping(APIConstant.API_V_1_CHATS)
 @RequiredArgsConstructor
 public class ChatController {
 

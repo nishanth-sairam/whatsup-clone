@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.constant.APIConstant;
 import com.example.demo.model.User;
 import com.example.demo.response.UserResponse;
 import com.example.demo.service.UserService;
@@ -15,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/v1/users")
-@CrossOrigin(origins = "*")
+@RequestMapping(APIConstant.API_V_1_USERS)
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/all")
+    @GetMapping(APIConstant.ALL)
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<List<User>> getAllUsers() {
         try {
@@ -43,7 +43,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(APIConstant.ID_PATH)
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
         try {
@@ -60,7 +60,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/email/{email}")
+    @GetMapping(APIConstant.EMAIL + APIConstant.EMAIL_PATH)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
         try {
@@ -96,7 +96,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(APIConstant.ID_PATH)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> updateUser(@PathVariable UUID id, @Valid @RequestBody User userDetails) {
         try {
@@ -111,7 +111,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(APIConstant.ID_PATH)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> deleteUser(@PathVariable UUID id) {
         try {
@@ -125,7 +125,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/search")
+    @GetMapping(APIConstant.SEARCH)
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<List<User>> searchUsers(@RequestParam String q) {
         try {
@@ -138,7 +138,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/role/{role}")
+    @GetMapping(APIConstant.ROLE + APIConstant.ROLE_PATH)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getUsersByRole(@PathVariable User.Role role) {
         try {
@@ -151,7 +151,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/active")
+    @GetMapping(APIConstant.ACTIVE)
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<List<User>> getActiveUsers() {
         try {
@@ -164,7 +164,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/stats")
+    @GetMapping(APIConstant.STATS)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getUserStats() {
         try {
@@ -183,7 +183,7 @@ public class UserController {
         }
     }
 
-    @PatchMapping("/{id}/toggle-status")
+    @PatchMapping(APIConstant.ID_PATH + APIConstant.TOGGLE_STATUS)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> toggleUserStatus(@PathVariable UUID id) {
         try {

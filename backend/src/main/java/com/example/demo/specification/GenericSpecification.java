@@ -1,17 +1,15 @@
 package com.example.demo.specification;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.data.jpa.domain.Specification;
-
 import com.example.demo.model.FilterCriteria;
-
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GenericSpecification {
 
@@ -22,7 +20,7 @@ public class GenericSpecification {
             for (FilterCriteria filter : filters) {
                 predicates.add(buildPredicate(filter, root, criteriaBuilder));
             }
-            
+
             // Return combined predicates with AND logic
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -32,7 +30,7 @@ public class GenericSpecification {
         Path<?> path = getPath(root, filter.getField());
         Class<?> fieldType = path.getJavaType();
         Object value = convertValueToFieldType(filter.getValue(), fieldType);
-        
+
         switch (filter.getOperator()) {
             case eq:
                 return criteriaBuilder.equal(path, value);
@@ -57,9 +55,9 @@ public class GenericSpecification {
             case between:
                 String[] range = filter.getValue().toString().split(",");
                 if (range.length == 2) {
-                    return criteriaBuilder.between(path.as(Comparable.class), 
-                        (Comparable) convertValueToFieldType(range[0].trim(), fieldType), 
-                        (Comparable) convertValueToFieldType(range[1].trim(), fieldType));
+                    return criteriaBuilder.between(path.as(Comparable.class),
+                            (Comparable) convertValueToFieldType(range[0].trim(), fieldType),
+                            (Comparable) convertValueToFieldType(range[1].trim(), fieldType));
                 }
                 throw new IllegalArgumentException("Between operator requires exactly 2 values separated by comma");
             case is_null:
@@ -84,7 +82,7 @@ public class GenericSpecification {
         if (value == null) {
             return null;
         }
-        
+
         try {
             switch (fieldType.getSimpleName()) {
                 case "String":
